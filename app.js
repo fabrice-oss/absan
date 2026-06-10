@@ -23,8 +23,56 @@ const el = {
   proklamater:     document.getElementById('proklamater'),
   rows:            document.getElementById('rows'),
   finish:          document.getElementById('finishBtn'),
-  toast:           document.getElementById('toast')
+  toast:           document.getElementById('toast'),
+  // Auth
+  loginScreen:     document.getElementById('loginScreen'),
+  loginForm:       document.getElementById('loginForm'),
+  loginEmail:      document.getElementById('loginEmail'),
+  loginPassword:   document.getElementById('loginPassword'),
+  loginError:      document.getElementById('loginError'),
+  logoutBtn:       document.getElementById('logoutBtn'),
+  app:             document.querySelector('.app')
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTHENTIFICATION
+// ═══════════════════════════════════════════════════════════════════
+function showLoginScreen() {
+  el.loginScreen.style.display = 'flex';
+  el.app.hidden = true;
+}
+function showApp() {
+  el.loginScreen.style.display = 'none';
+  el.app.hidden = false;
+}
+async function checkAuth() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) { showApp(); loadAllData(); }
+  else { showLoginScreen(); }
+}
+el.loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  el.loginError.hidden = true;
+  const btn = el.loginForm.querySelector('button[type=submit]');
+  btn.textContent = '…'; btn.disabled = true;
+  const { error } = await db.auth.signInWithPassword({
+    email:    el.loginEmail.value.trim(),
+    password: el.loginPassword.value
+  });
+  btn.textContent = 'Se connecter'; btn.disabled = false;
+  if (error) {
+    el.loginError.textContent = 'Email ou mot de passe incorrect.';
+    el.loginError.hidden = false;
+  } else {
+    showApp();
+    loadAllData();
+  }
+});
+el.logoutBtn.addEventListener('click', async () => {
+  await db.auth.signOut();
+  state.data = {};
+  showLoginScreen();
+});
 
 // ═══════════════════════════════════════════════════════════════════
 // SUPABASE — CHARGEMENT INITIAL
@@ -351,6 +399,6 @@ document.addEventListener('pointerdown', (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
-// DÉMARRAGE — charge les données depuis Supabase
+// DÉMARRAGE — vérifie la session avant tout
 // ═══════════════════════════════════════════════════════════════════
-loadAllData();
+checkAuth();

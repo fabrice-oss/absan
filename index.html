@@ -8,7 +8,28 @@
   <link rel="stylesheet" href="styles.css?v=20260610-v6" />
 </head>
 <body>
-  <main class="app">
+
+  <!-- ── ÉCRAN DE CONNEXION ── -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h1 class="login-title">Fey Not Absan</h1>
+      <p class="login-subtitle">Lasanble Flacq</p>
+      <form id="loginForm" novalidate>
+        <label class="login-label">
+          Email
+          <input id="loginEmail" type="email" placeholder="ton@email.com" autocomplete="email" required />
+        </label>
+        <label class="login-label">
+          Mot de passe
+          <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" required />
+        </label>
+        <p id="loginError" class="login-error" hidden></p>
+        <button type="submit" class="login-btn">Se connecter</button>
+      </form>
+    </div>
+  </div>
+
+  <main class="app" hidden>
     <section id="home" class="screen active" aria-label="Accueil">
       <header class="home-header">
         <div>
@@ -17,6 +38,7 @@
           <p id="progress" class="muted">0 teritwar renseigné</p>
         </div>
         <input id="search" type="search" placeholder="Rechercher..." autocomplete="off" />
+        <button id="logoutBtn" class="logout-btn" type="button">Déconnexion</button>
       </header>
       <div id="territoryGrid" class="territory-grid"></div>
     </section>
