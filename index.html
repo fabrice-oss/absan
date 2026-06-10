@@ -12,12 +12,13 @@
   <!-- ── ÉCRAN DE CONNEXION ── -->
   <div id="loginScreen" class="login-screen">
     <div class="login-card">
+      <div class="login-badge">🗺️</div>
       <h1 class="login-title">Fey Not Absan</h1>
-      <p class="login-subtitle">Lasanble Flacq</p>
+      <p class="login-sub">Lasanble Flacq · Connexion requise</p>
       <form id="loginForm" novalidate>
         <label class="login-label">
           Email
-          <input id="loginEmail" type="email" placeholder="ton@email.com" autocomplete="email" required />
+          <input id="loginEmail" type="email" placeholder="ton@email.com" autocomplete="email" inputmode="email" required />
         </label>
         <label class="login-label">
           Mot de passe
