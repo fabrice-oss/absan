@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-store" />
   <title>Fey Not Absan Lasanble Flacq</title>
-  <link rel="stylesheet" href="styles.css?v=20260610-v6" />
+  <link rel="stylesheet" href="styles.css?v=20260610-v14" />
 </head>
 <body>
 
@@ -46,7 +46,7 @@
 
     <section id="detail" class="screen" aria-label="Fiche territoire">
       <header class="detail-header">
-        <div class="top-actions"><button id="backBtn" class="back-btn" type="button">← Accueil</button><button id="resetBtn" class="reset-btn" type="button">Refer Teritwar</button></div>
+        <div class="top-actions"><button id="backBtn" class="back-btn" type="button">← Accueil</button><button id="resetBtn" class="reset-btn" type="button">Refer Teritwar</button><button id="deleteAllBtn" class="delete-all-btn" type="button">Delete Tou</button><button id="readBeforeBtn" class="read-before-btn" type="button">‼️Lir Avan</button></div>
         <div>
           <h1>Fey Not Absan Lasanble Flacq</h1>
           <p id="territoryTitle" class="subtitle">Teritwar</p>
@@ -68,7 +68,6 @@
       <section class="table-card">
         <div class="table-head">
           <h2>Renseignements lakaz</h2>
-          
         </div>
         <div class="rows-title desktop-only">
           <span class="col-lakaz">Lakaz</span>
@@ -87,11 +86,29 @@
         <button id="finishBtn" class="finish-btn" type="button">Termine</button>
       </section>
     </section>
+
+    <div id="warningModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="warningTitle" hidden>
+      <div class="modal-card">
+        <h2 id="warningTitle">‼️Lir Avan</h2>
+        <p>Pa met bann detay initil, personel ouswa sansib. Rant zis bann linformasion ki vremem neseser pou to retrouv enn plas. To bizin respekte lalwa ki aplikab Moris, sirtou Data Protection Act 2017.</p>
+        <button id="modalOkBtn" class="modal-ok-btn" type="button">Mo dakor</button>
+      </div>
+    </div>
+    <div id="confirmModal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+      <div class="confirm-card">
+        <h2 id="confirmTitle">Konfirmasion</h2>
+        <p id="confirmText">Eski to sir?</p>
+        <div class="confirm-actions">
+          <button id="confirmNoBtn" class="confirm-no-btn" type="button">Non</button>
+          <button id="confirmYesBtn" class="confirm-yes-btn" type="button">Wi, efase</button>
+        </div>
+      </div>
+    </div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-</main>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="polygons.js?v=20260610-v6"></script>
-  <script src="app.js?v=20260610-v6"></script>
+  <script src="polygons.js?v=20260610-v14"></script>
+  <script src="app.js?v=20260610-v14"></script>
 </body>
 </html>
