@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'fey-not-absan-flacq-v9';
+const STORAGE_KEY = 'fey-not-absan-flacq-v11';
 const GROUP_COLORS = ['#0F1F45', '#536FA8', '#1B3A7A', '#274B87'];
 const state = { selectedId: null, data: loadData() };
 const el = {
@@ -8,12 +8,14 @@ const el = {
   search: document.getElementById('search'),
   progress: document.getElementById('progress'),
   back: document.getElementById('backBtn'),
+  reset: document.getElementById('resetBtn'),
   territoryTitle: document.getElementById('territoryTitle'),
   territoryNumber: document.getElementById('territoryNumber'),
   blok: document.getElementById('blok'),
   proklamater: document.getElementById('proklamater'),
   rows: document.getElementById('rows'),
-  addRow: document.getElementById('addRowBtn')
+  finish: document.getElementById('finishBtn'),
+  toast: document.getElementById('toast')
 };
 
 function loadData(){
@@ -31,14 +33,14 @@ function newRow(n){
   return { absan:false, prezan:false, nepli:false, detail:'', date:'' };
 }
 function currentRecord(){
-  if(!state.data[state.selectedId]) state.data[state.selectedId] = { blok:'', proklamater:'', rows:[newRow(1)] };
+  if(!state.data[state.selectedId]) state.data[state.selectedId] = { blok:'', proklamater:'', completed:false, rows:[newRow(1)] };
   if(!Array.isArray(state.data[state.selectedId].rows) || state.data[state.selectedId].rows.length === 0){
     state.data[state.selectedId].rows = [newRow(1)];
   }
   return state.data[state.selectedId];
 }
 function hasUsefulData(rec){
-  return !!(rec && ((rec.blok || '').trim() || (rec.proklamater || '').trim() || (rec.rows || []).some(r => r.absan || r.prezan || r.nepli || (r.detail || '').trim() || (r.date || '').trim())));
+  return !!(rec && (rec.completed || (rec.blok || '').trim() || (rec.proklamater || '').trim() || (rec.rows || []).some(r => r.absan || r.prezan || r.nepli || (r.detail || '').trim() || (r.date || '').trim())));
 }
 function updateProgress(){
   const count = Object.values(state.data).filter(hasUsefulData).length;
@@ -68,6 +70,29 @@ function groupIndexFor(name){
   const group = territoryGroupName(name);
   return SORTED_GROUPS.indexOf(group);
 }
+function showToast(message){
+  if(!el.toast) return;
+  el.toast.textContent = message;
+  el.toast.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => el.toast.classList.remove('show'), 1900);
+}
+function pulse(node){
+  if(!node) return;
+  node.classList.remove('reset-visual','changed');
+  void node.offsetWidth;
+  node.classList.add(node.classList.contains('lakaz-row') ? 'changed' : 'reset-visual');
+}
+function addRipple(e){
+  const target = e.currentTarget;
+  const r = target.getBoundingClientRect();
+  target.style.setProperty('--x', `${e.clientX - r.left}px`);
+  target.style.setProperty('--y', `${e.clientY - r.top}px`);
+  target.classList.remove('rippling');
+  void target.offsetWidth;
+  target.classList.add('rippling');
+  setTimeout(() => target.classList.remove('rippling'), 600);
+}
 const SORTED_GROUPS = [...new Set(POLYGONS.filter(p => p.name && p.name.trim()).map(p => territoryGroupName(p.name)))];
 
 function renderGrid(){
@@ -77,6 +102,7 @@ function renderGrid(){
     const b = document.createElement('button');
     b.className = 'territory-btn';
     if(hasUsefulData(state.data[p.id])) b.classList.add('has-data');
+    if(state.data[p.id]?.completed) b.classList.add('completed');
     b.type = 'button';
     const gi = groupIndexFor(p.name);
     b.style.backgroundColor = GROUP_COLORS[Math.max(0, gi) % GROUP_COLORS.length];
@@ -132,22 +158,35 @@ function renderDetail(){
     detail.placeholder = 'Bann Detay';
     detail.value = row.detail || '';
 
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+
     const date = document.createElement('input');
-    date.type = 'date';
+    date.className = 'date-field';
+    date.type = row.date ? 'date' : 'text';
+    date.placeholder = 'Dat';
     date.dataset.field = 'date';
     date.value = row.date || '';
+    date.addEventListener('focus', () => { date.type = 'date'; });
+    date.addEventListener('blur', () => { if(!date.value) date.type = 'text'; });
 
     const del = document.createElement('button');
     del.className = 'delete-btn';
     del.type = 'button';
     del.title = 'Supprimer';
-    del.textContent = '×';
+    del.textContent = 'Delete';
+
+    const next = document.createElement('button');
+    next.className = 'next-btn';
+    next.type = 'button';
+    next.textContent = 'Prosin Lakaz';
 
     [absan, prezan, nepli].forEach(label => {
       const input = label.querySelector('input');
       input.addEventListener('change', () => {
         row[input.dataset.field] = input.checked;
         updateRowColor(wrap, row);
+        pulse(wrap);
         saveData();
       });
     });
@@ -159,21 +198,63 @@ function renderDetail(){
       saveData();
       renderDetail();
     });
+    next.addEventListener('click', () => {
+      rec.rows.push(newRow(rec.rows.length + 1));
+      saveData();
+      renderDetail();
+      setTimeout(() => {
+        const allRows = el.rows.querySelectorAll('.lakaz-row');
+        allRows[allRows.length - 1]?.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 0);
+    });
+    actions.append(del, next);
 
-    wrap.append(lakaz, absan, prezan, nepli, detail, date, del);
+    wrap.append(lakaz, absan, prezan, nepli, detail, actions, date);
     el.rows.appendChild(wrap);
   });
+  el.finish.classList.toggle('done', !!rec.completed);
+  el.finish.textContent = rec.completed ? 'Termine ✓' : 'Termine';
   saveData();
 }
 
 el.search.addEventListener('input', renderGrid);
 el.back.addEventListener('click', showHome);
-el.blok.addEventListener('input', () => { currentRecord().blok = el.blok.value; saveData(); });
-el.proklamater.addEventListener('input', () => { currentRecord().proklamater = el.proklamater.value; saveData(); });
-el.addRow.addEventListener('click', () => {
+el.reset.addEventListener('click', () => {
   const rec = currentRecord();
-  rec.rows.push(newRow(rec.rows.length + 1));
+  rec.completed = false;
+  rec.proklamater = '';
+  (rec.rows || []).forEach(row => {
+    row.absan = false;
+    row.prezan = false;
+    row.nepli = false;
+    row.date = '';
+  });
   saveData();
   renderDetail();
+  pulse(document.querySelector('.detail-header'));
+  pulse(document.querySelector('.meta-card'));
+  document.querySelectorAll('.lakaz-row').forEach(pulse);
+  showToast('Teritwar reouvert : statuts et dates effacés');
+});
+el.blok.addEventListener('input', () => { currentRecord().blok = el.blok.value; saveData(); });
+el.proklamater.addEventListener('input', () => { currentRecord().proklamater = el.proklamater.value; saveData(); });
+el.finish.addEventListener('click', () => {
+  const rec = currentRecord();
+  rec.completed = true;
+  state.lastCompletedId = state.selectedId;
+  saveData();
+  el.finish.classList.add('done');
+  el.finish.textContent = 'Termine ✓';
+  showHome();
+  showToast('Teritwar termine');
+  setTimeout(() => {
+    const btn = [...document.querySelectorAll('.territory-btn')].find(b => b.textContent === (POLYGONS.find(p => String(p.id) === String(state.lastCompletedId))?.name));
+    btn?.classList.add('reset-flash');
+  }, 30);
+});
+
+document.addEventListener('pointerdown', (e) => {
+  const btn = e.target.closest('button');
+  if(btn) addRipple({currentTarget:btn, clientX:e.clientX, clientY:e.clientY});
 });
 renderGrid();

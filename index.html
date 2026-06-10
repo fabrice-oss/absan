@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-store" />
   <title>Fey Not Absan Lasanble Flacq</title>
-  <link rel="stylesheet" href="styles.css?v=20260610-4" />
+  <link rel="stylesheet" href="styles.css?v=20260610-v6" />
 </head>
 <body>
   <main class="app">
@@ -23,7 +23,7 @@
 
     <section id="detail" class="screen" aria-label="Fiche territoire">
       <header class="detail-header">
-        <button id="backBtn" class="back-btn" type="button">← Accueil</button>
+        <div class="top-actions"><button id="backBtn" class="back-btn" type="button">← Accueil</button><button id="resetBtn" class="reset-btn" type="button">Refer Teritwar</button></div>
         <div>
           <h1>Fey Not Absan Lasanble Flacq</h1>
           <p id="territoryTitle" class="subtitle">Teritwar</p>
@@ -45,7 +45,7 @@
       <section class="table-card">
         <div class="table-head">
           <h2>Renseignements lakaz</h2>
-          <button id="addRowBtn" class="primary" type="button">+ Ajouter Lakaz</button>
+          
         </div>
         <div class="rows-title desktop-only">
           <span class="col-lakaz">Lakaz</span>
@@ -58,10 +58,16 @@
         </div>
         <div id="rows"></div>
       </section>
-    </section>
-  </main>
 
-  <script src="polygons.js?v=20260610-4"></script>
-  <script src="app.js?v=20260610-4"></script>
+      <section class="finish-card" aria-label="Terminer le territoire">
+        <p>Fer seki to kapav pou zwenn tou bann absan, lakaz-lakaz, par telefonn ouswa par let. Kan to trouve ki tonn fer tou seki to ti kapav pou zwenn zot tou, clik lor Termine.</p>
+        <button id="finishBtn" class="finish-btn" type="button">Termine</button>
+      </section>
+    </section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</main>
+
+  <script src="polygons.js?v=20260610-v6"></script>
+  <script src="app.js?v=20260610-v6"></script>
 </body>
 </html>
